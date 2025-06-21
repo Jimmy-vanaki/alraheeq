@@ -1,0 +1,11 @@
+{
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#17332C",
+        "titleBar.activeBackground": "#20473E",
+        "titleBar.activeForeground": "#F8FCFB"
+    },
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "files.associations": {
+        "xstring": "cpp"
+    }
+}
