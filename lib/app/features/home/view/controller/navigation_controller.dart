@@ -57,15 +57,6 @@ class BottmNavigationController extends GetxController {
         bookListController.fetchDownloadedBooks();
         break;
       case 4:
-        FavoriteController favoriteController;
-        if (Get.isRegistered<FavoriteController>()) {
-          favoriteController = Get.find<FavoriteController>();
-        } else {
-          favoriteController = Get.put(FavoriteController());
-        }
-
-        favoriteController.loadBookmarks();
-        favoriteController.loadComments();
         break;
     }
   }

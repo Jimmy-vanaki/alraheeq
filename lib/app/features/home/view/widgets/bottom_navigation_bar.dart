@@ -9,7 +9,8 @@ class CostumBottomNavigationBar extends StatelessWidget {
     super.key,
   });
 
-  final BottmNavigationController navigationController = Get.find<BottmNavigationController>();
+  final BottmNavigationController navigationController =
+      Get.find<BottmNavigationController>();
 
   @override
   Widget build(BuildContext context) {
@@ -59,12 +60,19 @@ class CostumBottomNavigationBar extends StatelessWidget {
             selectIcon: 'fill/book-alt',
             title: 'كتب',
           ),
+          // _bottomAppBarItem(
+          //   icon: 'wishlist-star',
+          //   page: 4,
+          //   context: context,
+          //   selectIcon: 'fill/wishlist-star',
+          //   title: 'اشارات',
+          // ),
           _bottomAppBarItem(
-            icon: 'wishlist-star',
+            icon: 'ai-technology',
             page: 4,
             context: context,
-            selectIcon: 'fill/wishlist-star',
-            title: 'اشارات',
+            selectIcon: 'fill/ai-technology',
+            title: 'الذكاء',
           ),
         ],
       ),

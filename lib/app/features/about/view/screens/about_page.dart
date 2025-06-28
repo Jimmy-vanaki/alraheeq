@@ -61,56 +61,54 @@ class AboutPage extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Obx(() => controller.showWebView.value
-                          ? Expanded(
-                              child: InAppWebView(
-                                initialFile: "assets/web/html/$fileName",
-                                initialSettings: InAppWebViewSettings(
-                                  transparentBackground: true,
-                                  javaScriptEnabled: true,
-                                  supportZoom: false,
-                                  builtInZoomControls: false,
-                                  displayZoomControls: false,
-                                  pageZoom: 1,
-                                  maximumZoomScale: 1,
-                                  minimumZoomScale: 1,
-                                  disableContextMenu: true,
-                                ),
-                                initialUserScripts:
-                                    UnmodifiableListView<UserScript>([
-                                  UserScript(
-                                    source: '''
-                                  // Set transparent background for html and body
-                                  document.documentElement.style.backgroundColor = 'transparent';
-                                  document.body.style.backgroundColor = 'transparent';
-                          
-                                  // Also force transparent background for all immediate child elements of body
-                                  Array.from(document.body.children).forEach(function(el) {
-                                    el.style.backgroundColor = 'transparent';
-                                  });
-                          
-                                  // Hide scrollbar while keeping scroll active
-                                  document.body.style.overflowY = 'scroll'; // keep scroll active
-                                  document.body.style.msOverflowStyle = 'none'; // IE, Edge
-                                  document.body.style.scrollbarWidth = 'none'; // Firefox
-                          
-                                  var styleEl = document.createElement('style');
-                                  styleEl.textContent = `
-                                    ::-webkit-scrollbar { 
-                                      width: 0px; 
-                                      background: transparent;
-                                    }
-                                  `;
-                                  document.head.appendChild(styleEl);
-                                ''',
-                                    injectionTime:
-                                        UserScriptInjectionTime.AT_DOCUMENT_END,
-                                    forMainFrameOnly: true,
-                                  )
-                                ]),
-                                onWebViewCreated: (controller) async {},
-                                onLoadStop: (controller, url) async {},
-                              ),
-                            )
+                          ? InAppWebView(
+                            initialFile: "assets/web/html/$fileName",
+                            initialSettings: InAppWebViewSettings(
+                              transparentBackground: true,
+                              javaScriptEnabled: true,
+                              supportZoom: false,
+                              builtInZoomControls: false,
+                              displayZoomControls: false,
+                              pageZoom: 1,
+                              maximumZoomScale: 1,
+                              minimumZoomScale: 1,
+                              disableContextMenu: true,
+                            ),
+                            initialUserScripts:
+                                UnmodifiableListView<UserScript>([
+                              UserScript(
+                                source: '''
+                              // Set transparent background for html and body
+                              document.documentElement.style.backgroundColor = 'transparent';
+                              document.body.style.backgroundColor = 'transparent';
+                                                    
+                              // Also force transparent background for all immediate child elements of body
+                              Array.from(document.body.children).forEach(function(el) {
+                                el.style.backgroundColor = 'transparent';
+                              });
+                                                    
+                              // Hide scrollbar while keeping scroll active
+                              document.body.style.overflowY = 'scroll'; // keep scroll active
+                              document.body.style.msOverflowStyle = 'none'; // IE, Edge
+                              document.body.style.scrollbarWidth = 'none'; // Firefox
+                                                    
+                              var styleEl = document.createElement('style');
+                              styleEl.textContent = `
+                                ::-webkit-scrollbar { 
+                                  width: 0px; 
+                                  background: transparent;
+                                }
+                              `;
+                              document.head.appendChild(styleEl);
+                            ''',
+                                injectionTime:
+                                    UserScriptInjectionTime.AT_DOCUMENT_END,
+                                forMainFrameOnly: true,
+                              )
+                            ]),
+                            onWebViewCreated: (controller) async {},
+                            onLoadStop: (controller, url) async {},
+                          )
                           : const SizedBox.shrink()),
                     ),
                   ),
@@ -189,8 +187,8 @@ class AboutPage extends StatelessWidget {
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: socialItems.map((item) {
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: socialItems.map((item) { 
                   return Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: ZoomTapAnimation(
@@ -199,7 +197,7 @@ class AboutPage extends StatelessWidget {
                       },
                       child: SvgPicture.asset(
                         item.assetPath,
-                        height: 35,
+                        height: 25,
                         colorFilter: ColorFilter.mode(
                             Theme.of(context).colorScheme.primary,
                             BlendMode.srcIn),

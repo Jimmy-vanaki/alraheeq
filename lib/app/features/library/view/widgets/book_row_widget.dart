@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:al_raheeq_library/app/core/common/constants/constants.dart';
 import 'package:al_raheeq_library/app/core/common/widgets/custom_loading.dart';
 import 'package:al_raheeq_library/app/features/book_content/view/screens/content_page.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
+import 'package:path/path.dart' as path;
 
 class BooksRow extends StatelessWidget {
   const BooksRow({
@@ -172,10 +172,22 @@ class BooksRow extends StatelessWidget {
                         ),
                         Positioned(
                           top: 10,
-                          child: FutureBuilder<Directory?>(
-                            future: Platform.isWindows
-                                ? getDownloadsDirectory()
-                                : getApplicationDocumentsDirectory(),
+                          child: FutureBuilder<Directory>(
+                            future: Future(() async {
+                              if (Platform.isWindows) {
+                                // گرفتن مسیر AppData به صورت داینامیک از محیط ویندوز
+                                final appData = Platform.environment[
+                                    'APPDATA']; // مثل: C:\Users\mvana\AppData\Roaming
+                                return Directory(path.join(
+                                    appData!,
+                                    'com.dijlah',
+                                    'al_raheeq_library',
+                                    'alraheeq'));
+                              } else {
+                                // برای سایر پلتفرم‌ها مسیر داکیومنت
+                                return await getApplicationDocumentsDirectory();
+                              }
+                            }),
                             builder: (context, snapshot) {
                               if (!snapshot.hasData || snapshot.data == null) {
                                 return const CustomLoading();

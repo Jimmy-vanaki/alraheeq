@@ -4,6 +4,8 @@ import 'package:al_raheeq_library/app/config/share_app.dart';
 import 'package:al_raheeq_library/app/core/common/constants/constants.dart';
 import 'package:al_raheeq_library/app/core/routes/routes.dart';
 import 'package:al_raheeq_library/app/features/about/view/screens/about_page.dart';
+import 'package:al_raheeq_library/app/features/favorite%20&%20comment/view/controller/favorite_controller.dart';
+import 'package:al_raheeq_library/app/features/favorite%20&%20comment/view/screens/favorite_page.dart';
 import 'package:al_raheeq_library/app/features/home/view/controller/hijri_date_controller.dart';
 import 'package:al_raheeq_library/app/features/home/view/controller/navigation_controller.dart';
 import 'package:al_raheeq_library/app/features/setting/view/controller/settings_controller.dart';
@@ -75,6 +77,24 @@ class CustomDrawer extends StatelessWidget {
         }
       },
       {
+        "title": 'المفضلة والاشارات المرجعية',
+        "icon": 'wishlist-star',
+        "onTap": () {
+          FavoriteController favoriteController;
+          if (Get.isRegistered<FavoriteController>()) {
+            favoriteController = Get.find<FavoriteController>();
+          } else {
+            favoriteController = Get.put(FavoriteController());
+          }
+
+          favoriteController.loadBookmarks();
+          favoriteController.loadComments();
+          Get.to(
+            FavoritePage(),
+          );
+        }
+      },
+      {
         "title": 'مشاركة التطبيق',
         "icon": 'share-square',
         "onTap": () {
@@ -128,34 +148,49 @@ class CustomDrawer extends StatelessWidget {
                     );
             },
           ),
-          Obx(() => ListTile(
-                leading: SvgPicture.asset(
-                  'assets/svgs/moon.svg',
-                  colorFilter: ColorFilter.mode(
-                    Theme.of(context).colorScheme.onPrimary,
-                    BlendMode.srcIn,
-                  ),
+          Obx(
+            () => ListTile(
+              leading: SvgPicture.asset(
+                'assets/svgs/moon.svg',
+                colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.onPrimary,
+                  BlendMode.srcIn,
                 ),
-                title: const Text(
-                  'تبديل الوضع الليلي',
-                  style: TextStyle(fontSize: 14),
+              ),
+              title: const Text(
+                'تبديل الوضع الليلي',
+                style: TextStyle(fontSize: 14),
+              ),
+              trailing: Transform.scale(
+                scale: 0.75,
+                child: Switch(
+                  value: settingsController.isDarkMode.value,
+                  onChanged: (value) {
+                    settingsController.isDarkMode.value = value;
+
+                    final ThemeColorScheme themeToUse = value
+                        ? settingsController.darkColorScheme
+                        : settingsController.selectedColorScheme.value;
+
+                    print('🌗 سوئیچ شد به حالت: ${value ? "تاریک" : "روشن"}');
+                    print('🎯 رنگ انتخاب‌شده برای تم:');
+                    print('🔹 primary: ${themeToUse.primary.value}');
+                    print('🔹 onPrimary: ${themeToUse.onPrimary.value}');
+                    print('🔹 surface: ${themeToUse.surface.value}');
+
+                    settingsController.setTheme(
+                      settingsController.themeColorSchemes[0],
+                      isDarkMode: value,
+                      themeindex: settingsController.themeIndex.value,
+                    );
+
+                    Constants.localStorage.write('isDarkMode', value);
+                  },
                 ),
-                trailing: Transform.scale(
-                  scale: 0.75,
-                  child: Switch(
-                    value: settingsController.isDarkMode.value,
-                    onChanged: (value) {
-                      settingsController.isDarkMode.value = value;
-                      settingsController.setTheme(
-                        settingsController.selectedColorScheme.value,
-                        isDarkMode: value,
-                      );
-                      Constants.localStorage.write('isDarkMode', value);
-                    },
-                  ),
-                ),
-                onTap: () {},
-              )),
+              ),
+              onTap: () {},
+            ),
+          ),
 
           // Spacer(),
           Column(

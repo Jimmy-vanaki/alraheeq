@@ -27,8 +27,10 @@ class SearchPage extends StatelessWidget {
               margin: EdgeInsets.all(20).copyWith(top: 5),
               padding: EdgeInsets.all(4),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.black.withAlpha(30)),
+                border:
+                    Border.all(color: Theme.of(context).colorScheme.onPrimary),
                 borderRadius: BorderRadius.circular(10),
+                color: Theme.of(context).colorScheme.onPrimary.withAlpha(100),
               ),
               child: Obx(
                 () => Stack(

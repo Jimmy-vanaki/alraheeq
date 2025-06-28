@@ -14,12 +14,18 @@ class InternalPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Image.asset(
-            "assets/images/bg-b.png",
-            height: Get.height,
-            width: Get.width,
-            fit: BoxFit.contain,
-            repeat: ImageRepeat.repeatX,
+          ColorFiltered(
+            colorFilter: ColorFilter.mode(
+              Theme.of(context).colorScheme.onPrimary.withAlpha(50),
+              BlendMode.colorBurn,
+            ),
+            child: Image.asset(
+              "assets/images/bg-b.png",
+              height: Get.height,
+              width: Get.width,
+              fit: BoxFit.contain,
+              repeat: ImageRepeat.repeatX,
+            ),
           ),
           Container(
             margin: EdgeInsets.only(top: 90),

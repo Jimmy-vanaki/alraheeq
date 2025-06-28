@@ -225,7 +225,8 @@ class SettingPage extends StatelessWidget {
                         return GestureDetector(
                           onTap: () {
                             controller.isDarkMode.value = false;
-                            controller.setTheme(scheme, isDarkMode: false);
+                            controller.setTheme(scheme,
+                                isDarkMode: false, themeindex: scheme.index);
                           },
                           child: Container(
                             width: 40,

@@ -38,8 +38,9 @@ class FavorityContainer extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(10),
-        decoration: Constants.containerBoxDecoration(context)
-            .copyWith(color: Colors.white),
+        decoration: Constants.containerBoxDecoration(context).copyWith(
+          color: Theme.of(context).colorScheme.primary,
+        ),
         child: Row(
           children: [
             SvgPicture.asset(

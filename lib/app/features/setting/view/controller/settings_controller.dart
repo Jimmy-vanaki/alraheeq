@@ -11,6 +11,7 @@ class SettingsController extends GetxController {
   var verticalScroll = true.obs;
   var isApplying = false.obs;
   var isDarkMode = false.obs;
+  var themeIndex = 0.obs;
   final BottmNavigationController navigationController =
       Get.find<BottmNavigationController>();
   var backgroundColor = Colors.white.obs;
@@ -18,53 +19,77 @@ class SettingsController extends GetxController {
     primary: const Color.fromARGB(255, 148, 179, 161),
     onPrimary: const Color(0xFF4B6969),
     surface: const Color.fromARGB(255, 242, 245, 238),
+    index: 0,
   ).obs;
   var showAllPages = true.obs;
+  final ThemeColorScheme darkColorScheme = ThemeColorScheme(
+    primary: Color(0xFF383838),
+    onPrimary: Color(0xFFACACAC),
+    surface: Color(0xFF1A1717),
+    index: 10,
+  );
+
   final List<ThemeColorScheme> themeColorSchemes = [
     ThemeColorScheme(
       primary: const Color.fromARGB(255, 148, 179, 161),
       onPrimary: const Color(0xFF4B6969),
       surface: const Color.fromARGB(255, 242, 245, 238),
+      index: 0,
     ),
     ThemeColorScheme(
       primary: Color.fromARGB(255, 175, 236, 250),
       onPrimary: Color.fromARGB(255, 17, 171, 205),
       surface: Color.fromARGB(255, 225, 245, 254),
+      index: 1,
     ),
     ThemeColorScheme(
       primary: Color.fromARGB(255, 169, 144, 100),
       onPrimary: Color.fromARGB(255, 103, 75, 25),
       surface: Color.fromARGB(255, 255, 251, 245),
+      index: 2,
     ),
     ThemeColorScheme(
       primary: Color.fromARGB(255, 141, 148, 176),
       onPrimary: Color.fromARGB(255, 76, 82, 104),
       surface: Color.fromARGB(255, 213, 216, 228),
+      index: 3,
     ),
     ThemeColorScheme(
       primary: Color.fromARGB(255, 45, 105, 151),
       onPrimary: Color.fromARGB(255, 0, 57, 102),
       surface: Color.fromARGB(255, 217, 235, 250),
+      index: 4,
     ),
   ];
 
   @override
   void onInit() {
     super.onInit();
-    final primary = Constants.localStorage.read('theme_primary');
-    final onPrimary = Constants.localStorage.read('theme_onPrimary');
-    final surface = Constants.localStorage.read('theme_surface');
     isDarkMode.value = Constants.localStorage.read('isDarkMode') ?? false;
+    themeIndex.value = Constants.localStorage.read('themeIndex') ?? 0;
+    print('isDarkMode==========================>$isDarkMode');
+    if (isDarkMode.value) {
+      // اگر حالت تاریک هست، از darkColorScheme استفاده کن
+      selectedColorScheme.value = darkColorScheme;
+    } else {
+      // حالت روشن: رنگ‌ها رو از لوکال استوریج بخون و ست کن
+      final primary = Constants.localStorage.read('theme_primary');
+      final onPrimary = Constants.localStorage.read('theme_onPrimary');
+      final surface = Constants.localStorage.read('theme_surface');
 
-    if (primary != null && onPrimary != null && surface != null) {
-      final restored = ThemeColorScheme(
-        primary: Color(primary),
-        onPrimary: Color(onPrimary),
-        surface: Color(surface),
-      );
-      selectedColorScheme.value = restored;
-      setTheme(restored, isDarkMode: isDarkMode.value);
+      if (primary != null && onPrimary != null && surface != null) {
+        selectedColorScheme.value = ThemeColorScheme(
+          primary: Color(primary),
+          onPrimary: Color(onPrimary),
+          surface: Color(surface),
+          index: themeIndex.value,
+        );
+      }
     }
+
+    setTheme(selectedColorScheme.value,
+        isDarkMode: isDarkMode.value, themeindex: themeIndex.value);
+
     fontSize.value = Constants.localStorage.read('fontSize') ?? 16.0;
     lineHeight.value = Constants.localStorage.read('lineHeight') ?? 1.8;
     fontFamily.value = Constants.localStorage.read('fontFamily') ?? 'دجلة';
@@ -77,15 +102,26 @@ class SettingsController extends GetxController {
     }
   }
 
-  void setTheme(ThemeColorScheme scheme, {bool isDarkMode = false}) {
+  void setTheme(ThemeColorScheme scheme,
+      {bool isDarkMode = false, required int themeindex}) {
     selectedColorScheme.value = scheme;
 
-    // Save theme colors locally
-    Constants.localStorage.write('theme_primary', scheme.primary.value);
-    Constants.localStorage.write('theme_onPrimary', scheme.onPrimary.value);
-    Constants.localStorage.write('theme_surface', scheme.surface.value);
+    // ذخیره رنگ‌ها
+    if (!isDarkMode) {
+      Constants.localStorage.write('theme_primary', scheme.primary.value);
+      Constants.localStorage.write('theme_onPrimary', scheme.onPrimary.value);
+      Constants.localStorage.write('theme_surface', scheme.surface.value);
+    }
+    Constants.localStorage.write('themeIndex', themeindex);
+
     print('111==========================$isDarkMode');
-    // Create new theme
+    print('111========================== theme_primary${scheme.primary.value}');
+    print(
+        '111========================== theme_onPrimary${scheme.onPrimary.value}');
+    print(
+        '111========================== theme_surface ${scheme.surface.value}');
+
+    // ساخت تم با توجه به حالت تاریک یا روشن
     final ThemeData newTheme = ThemeData(
       dividerTheme: DividerThemeData(color: scheme.onPrimary.withAlpha(50)),
       elevatedButtonTheme: isDarkMode
@@ -116,15 +152,20 @@ class SettingsController extends GetxController {
               onError: Colors.white,
             ),
     );
-    // final current = navigationController.currentPage.value;
 
-    // final newController = PageController(initialPage: current);
+    final current = navigationController.currentPage.value;
 
-    // navigationController.pageController.value.dispose();
+    final newController = PageController(initialPage: current);
 
-    // navigationController.pageController.value = newController;
+    navigationController.pageController.value.dispose();
 
+    navigationController.pageController.value = newController;
+
+    // تغییر تم فعلی اپ
     Get.changeTheme(newTheme);
+
+    // تغییر حالت تم (تم تاریک یا روشن)
+    Get.changeThemeMode(isDarkMode ? ThemeMode.dark : ThemeMode.light);
   }
 
 // Light theme for ElevatedButton
@@ -183,10 +224,12 @@ class ThemeColorScheme {
   final Color primary;
   final Color onPrimary;
   final Color surface;
+  final int index;
 
   ThemeColorScheme({
     required this.primary,
     required this.onPrimary,
     required this.surface,
+    required this.index,
   });
 }

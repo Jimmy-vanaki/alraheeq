@@ -7,9 +7,9 @@ import 'package:get_storage/get_storage.dart';
 
 Future<void> init() async {
   // Initialize the custom error widget
+  await GetStorage.init();
   CustomErrorWidget.initialize();
   Get.put(AppVersionController());
   Get.put(UpdateBooksApiProvider());
-  await GetStorage.init();
   await DBHelper.initDb();
 }

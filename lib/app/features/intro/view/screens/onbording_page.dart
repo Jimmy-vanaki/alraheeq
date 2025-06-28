@@ -67,6 +67,9 @@ class OnbordingPage extends StatelessWidget {
                             .onPrimary
                             .withAlpha(100),
                       ),
+                      onDotClicked: (index) {
+                        onBoardingController.animatedToPage(index);
+                      },
                     )
                   : Container(
                       margin: const EdgeInsets.symmetric(horizontal: 40),

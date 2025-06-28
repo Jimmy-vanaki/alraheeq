@@ -102,55 +102,58 @@ class ContentPage extends StatelessWidget {
                     ),
                   ),
                   const Gap(10),
-                  Obx(() => ZoomTapAnimation(
-                        onTap: () {
-                          if (searchContentController.showSearcResult.value &&
-                              !searchContentController.showSearch.value) {
-                            searchContentController.showSearch.value = false;
-                            searchContentController.showSearcResult.value =
-                                false;
+                  Obx(
+                    () => ZoomTapAnimation(
+                      onTap: () {
+                        if (searchContentController.showSearcResult.value &&
+                            !searchContentController.showSearch.value) {
+                          searchContentController.showSearch.value = false;
+                          searchContentController.showSearcResult.value = false;
 
-                            contentController.inAppWebViewController
-                                .evaluateJavascript(
-                              source: "clearHighlights();",
-                            );
+                          contentController.inAppWebViewController
+                              .evaluateJavascript(
+                            source: "clearHighlights();",
+                          );
 
-                            searchContentController.searchController.text = '';
-                          } else {
-                            searchContentController.showSearch.value =
-                                !searchContentController.showSearch.value;
-                            // searchContentController.showSearcResult.value =
-                            //     !searchContentController.showSearcResult.value;
-                          }
-                        },
-                        child: SvgPicture.asset(
-                          !searchContentController.showSearcResult.value
-                              ? 'assets/svgs/search.svg'
-                              : 'assets/svgs/not-found-alt.svg',
-                          width: 22,
-                          height: 22,
-                          colorFilter: ColorFilter.mode(
-                              searchContentController.showSearcResult.value
-                                  ? Colors.red
-                                  : Theme.of(context).colorScheme.onPrimary,
-                              BlendMode.srcIn),
-                        ),
-                      )),
-                  const Gap(10),
-                  ZoomTapAnimation(
-                    onTap: () {
-                      contentController.showAudio.value =
-                          !contentController.showAudio.value;
-                    },
-                    child: SvgPicture.asset(
-                      'assets/svgs/comment-alt-music.svg',
-                      width: 22,
-                      height: 22,
-                      colorFilter: ColorFilter.mode(
-                          Theme.of(context).colorScheme.onPrimary,
-                          BlendMode.srcIn),
+                          searchContentController.searchController.text = '';
+                        } else {
+                          searchContentController.showSearch.value =
+                              !searchContentController.showSearch.value;
+                          // searchContentController.showSearcResult.value =
+                          //     !searchContentController.showSearcResult.value;
+                        }
+                      },
+                      child: SvgPicture.asset(
+                        !searchContentController.showSearcResult.value
+                            ? 'assets/svgs/search.svg'
+                            : 'assets/svgs/not-found-alt.svg',
+                        width: 22,
+                        height: 22,
+                        colorFilter: ColorFilter.mode(
+                            searchContentController.showSearcResult.value
+                                ? Colors.red
+                                : Theme.of(context).colorScheme.onPrimary,
+                            BlendMode.srcIn),
+                      ),
                     ),
                   ),
+                  const Gap(10),
+                  contentController.bookInfo.value?['sound_url'] != ''
+                      ? ZoomTapAnimation(
+                          onTap: () {
+                            contentController.showAudio.value =
+                                !contentController.showAudio.value;
+                          },
+                          child: SvgPicture.asset(
+                            'assets/svgs/comment-alt-music.svg',
+                            width: 22,
+                            height: 22,
+                            colorFilter: ColorFilter.mode(
+                                Theme.of(context).colorScheme.onPrimary,
+                                BlendMode.srcIn),
+                          ),
+                        )
+                      : SizedBox(),
                   const Gap(10),
                   const Gap(10),
                   Expanded(
@@ -1154,6 +1157,7 @@ class ContentPage extends StatelessWidget {
                                             final writer = bookInfo['writer'];
                                             final img = bookInfo['img'];
 
+                                            print("❌soundUrl ==>$soundUrl");
                                             audioController.togglePlayPause(
                                               soundUrl,
                                               title,

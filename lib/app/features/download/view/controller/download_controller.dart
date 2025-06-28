@@ -40,11 +40,12 @@ class DownloadController extends GetxController {
       Directory dir;
       if (Platform.isAndroid || Platform.isIOS) {
         dir = await getApplicationDocumentsDirectory();
+      } else if (Platform.isWindows) {
+        dir = await getWindowsSaveDirectory();
       } else {
         dir = await getDownloadsDirectory() ??
             await getApplicationDocumentsDirectory();
       }
-
       String savePath = p.join(dir.path, fileName);
 
       // بررسی وجود فایل قبلاً دانلود شده
@@ -122,6 +123,21 @@ class DownloadController extends GetxController {
       }
     }
   }
+}
+
+Future<Directory> getWindowsSaveDirectory() async {
+  // Get the application support directory (typically AppData\Roaming)
+  final appSupportDir = await getApplicationSupportDirectory();
+
+  // Define a subdirectory named 'alraheeq' inside the support directory
+  final alraheeqDir = Directory(p.join(appSupportDir.path, 'alraheeq'));
+
+  // Create the directory if it doesn't exist
+  if (!await alraheeqDir.exists()) {
+    await alraheeqDir.create(recursive: true);
+  }
+
+  return alraheeqDir;
 }
 
 Future<bool> checkIfFileDownloaded(String fileName) async {

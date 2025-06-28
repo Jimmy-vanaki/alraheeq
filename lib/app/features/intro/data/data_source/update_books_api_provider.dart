@@ -21,28 +21,24 @@ class UpdateBooksApiProvider extends GetxController {
   }
 
   // Function to fetch updated books
-  Future<void> fetchUpdatedBooks({required String lastUpdate}) async {
+  Future<Status> fetchUpdatedBooks({required String lastUpdate}) async {
     rxRequestStatus.value = Status.loading;
 
     try {
-      // Send POST request to the API with last_update parameter
       final response = await http
           .post(
         Uri.parse('${Constants.baseUrl}home'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          "last_update": lastUpdate,
-        }),
+        body: jsonEncode({"last_update": lastUpdate}),
       )
           .timeout(
-        Duration(seconds: 10),
+        const Duration(seconds: 10),
         onTimeout: () {
-          print('⏰ Timeout occurred');
           showRetryButton.value = true;
           throw TimeoutException('Request timed out');
         },
       );
-      print('response.statusCode: ${response.statusCode}');
+
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
         final books = List<Map<String, dynamic>>.from(json['books'] ?? []);
@@ -52,18 +48,18 @@ class UpdateBooksApiProvider extends GetxController {
             .assignAll(List<Map<String, dynamic>>.from(json['sliders'] ?? []));
 
         rxRequestStatus.value = Status.success;
-
-        // Update local database with new books
         await DBHelper.upsertBooksBatch(books);
         await DBHelper.upsertCategoriesBatch(categories);
         Constants.localStorage.write('last_update', json['last_update']);
+
+        return Status.success;
       } else {
         rxRequestStatus.value = Status.error;
-        print('API Error: ${response.statusCode}');
+        return Status.error;
       }
     } catch (e) {
       rxRequestStatus.value = Status.error;
-      print('Exception caught: $e');
+      return Status.error;
     }
   }
 }

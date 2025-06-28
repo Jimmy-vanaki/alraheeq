@@ -1,6 +1,4 @@
-import 'package:al_raheeq_library/app/config/functions.dart';
-import 'package:al_raheeq_library/app/core/common/widgets/audio_visualizer.dart';
-import 'package:al_raheeq_library/app/features/audio/view/controller/audio_controller.dart';
+import 'package:al_raheeq_library/app/features/ai_support/view/screens/support_page.dart';
 import 'package:al_raheeq_library/app/features/download/view/screens/download_page.dart';
 import 'package:al_raheeq_library/app/features/favorite%20&%20comment/view/screens/favorite_page.dart';
 import 'package:al_raheeq_library/app/features/home/view/widgets/custom_drawer.dart';
@@ -21,7 +19,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
+    final size = MediaQuery.of(context).size;
     final BottmNavigationController navigationController =
         Get.find<BottmNavigationController>();
     // final AudioController audioController =
@@ -74,166 +72,25 @@ class HomePage extends StatelessWidget {
         sliderDrawerKey: scaffoldKey,
       ),
       body: SizedBox(
-        width: Get.width,
-        height: Get.height,
+        width: size.width,
+        height: size.height,
         child: Stack(
           children: [
             Obx(
               () => PageView(
                 controller: navigationController.pageController.value,
                 onPageChanged: navigationController.animatedToPage,
-                physics: const BouncingScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 children: [
                   const LibraryPage(),
                   const CategoryPage(),
                   const DownloadPage(),
                   const BookListPage(),
-                  const FavoritePage(),
+                  // const FavoritePage(),
+                  const SupportPage(),
                 ],
               ),
             ),
-
-            // Obx(
-            //   () => AnimatedPositioned(
-            //     bottom: 0,
-            //     left: 0,
-            //     right: 0,
-            //     duration: Duration(milliseconds: 300),
-            //     child: AnimatedContainer(
-            //       height: audioController.isFullScreen.value
-            //           ? 62
-            //           : (Get.height - 145),
-            //       duration: Duration(milliseconds: 300),
-            //       padding: EdgeInsets.symmetric(horizontal: 10),
-            //       decoration: BoxDecoration(
-            //         color: Theme.of(context).colorScheme.onPrimary,
-            //         borderRadius:
-            //             BorderRadius.vertical(top: Radius.circular(20)),
-            //         boxShadow: [
-            //           BoxShadow(
-            //             color: Colors.black.withOpacity(0.1),
-            //             blurRadius: 10,
-            //           ),
-            //         ],
-            //       ),
-            //       child: GetBuilder<AudioController>(
-            //         init: AudioController(),
-            //         builder: (controller) => Column(
-            //           mainAxisSize: MainAxisSize.min,
-            //           children: [
-            //             // دکمه پخش/مکث
-            //             Row(
-            //               mainAxisAlignment: MainAxisAlignment.center,
-            //               children: [
-            //                 ZoomTapAnimation(
-            //                   onTap: () {
-            //                     audioController.isFullScreen.value =
-            //                         !audioController.isFullScreen.value;
-            //                   },
-            //                   child: SvgPicture.asset(
-            //                     'assets/svgs/full-screen.svg',
-            //                     colorFilter: ColorFilter.mode(
-            //                       Theme.of(context).colorScheme.primary,
-            //                       BlendMode.srcIn,
-            //                     ),
-            //                     width: 20,
-            //                     height: 20,
-            //                   ),
-            //                 ),
-            //                 Obx(() {
-            //                   return Column(
-            //                     children: [
-            //                       SliderTheme(
-            //                         data: SliderTheme.of(context).copyWith(
-            //                           trackHeight: 1.0,
-            //                           thumbShape: const RoundSliderThumbShape(
-            //                               enabledThumbRadius: 6.0),
-            //                         ),
-            //                         child: Slider(
-            //                           value: controller.position.value.inSeconds
-            //                               .toDouble(),
-            //                           min: 0.0,
-            //                           max: controller.duration.value.inSeconds
-            //                               .toDouble(),
-            //                           onChanged: (value) {
-            //                             controller.seekTo(
-            //                                 Duration(seconds: value.toInt()));
-            //                           },
-            //                           activeColor:
-            //                               Theme.of(context).colorScheme.primary,
-            //                           inactiveColor:
-            //                               Colors.white.withOpacity(0.5),
-            //                         ),
-            //                       ),
-            //                       Row(
-            //                         mainAxisAlignment:
-            //                             MainAxisAlignment.spaceBetween,
-            //                         children: [
-            //                           Text(
-            //                             formatDuration(
-            //                                 controller.position.value),
-            //                             style: TextStyle(
-            //                                 color: Theme.of(context)
-            //                                     .colorScheme
-            //                                     .primary,
-            //                                 fontSize: 10),
-            //                           ),
-            //                           Text(
-            //                             formatDuration(
-            //                                 controller.duration.value),
-            //                             style: TextStyle(
-            //                                 color: Theme.of(context)
-            //                                     .colorScheme
-            //                                     .primary,
-            //                                 fontSize: 10),
-            //                           ),
-            //                         ],
-            //                       ),
-            //                     ],
-            //                   );
-            //                 }),
-            //                 const Gap(20),
-            //                 // دکمه پخش و توقف
-            //                 ZoomTapAnimation(
-            //                   onTap: () {
-            //                     controller.togglePlayPause(
-            //                         "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
-            //                   },
-            //                   child: Obx(() => SvgPicture.asset(
-            //                         controller.isPlaying.value
-            //                             ? 'assets/svgs/pause-circle.svg'
-            //                             : 'assets/svgs/play-circle.svg',
-            //                         colorFilter: ColorFilter.mode(
-            //                           Theme.of(context).colorScheme.primary,
-            //                           BlendMode.srcIn,
-            //                         ),
-            //                         width: 35,
-            //                         height: 35,
-            //                       )),
-            //                 ),
-            //                 const Gap(20),
-            //                 ZoomTapAnimation(
-            //                   onTap: () {
-            //                     controller.seekForward();
-            //                   },
-            //                   child: SvgPicture.asset(
-            //                     'assets/svgs/time-forward-ten2.svg',
-            //                     colorFilter: ColorFilter.mode(
-            //                       Theme.of(context).colorScheme.primary,
-            //                       BlendMode.srcIn,
-            //                     ),
-            //                     width: 20,
-            //                     height: 20,
-            //                   ),
-            //                 ),
-            //               ],
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),

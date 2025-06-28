@@ -27,7 +27,7 @@ class CommentContainer extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 10),
       padding: EdgeInsets.all(10),
       decoration: Constants.containerBoxDecoration(context)
-          .copyWith(color: Colors.white),
+          .copyWith(color: Theme.of(context).colorScheme.primary),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -59,7 +59,7 @@ class CommentContainer extends StatelessWidget {
             padding: EdgeInsets.all(5),
             margin: EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withAlpha(100),
+              color: Theme.of(context).colorScheme.onPrimary.withAlpha(50),
               borderRadius: BorderRadius.circular(10),
             ),
             width: Get.width,

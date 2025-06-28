@@ -18,12 +18,26 @@ class ContentRepository {
   //     return sqflite.databaseFactory;
   //   }
   // }
+  Future<Directory> getWindowsSaveDirectory() async {
+    final appSupportDir = await getApplicationSupportDirectory();
+
+    final alraheeqDir = Directory(join(appSupportDir.path, 'alraheeq'));
+
+    if (!await alraheeqDir.exists()) {
+      await alraheeqDir.create(recursive: true);
+    }
+
+    return alraheeqDir;
+  }
 
   /// Returns the path of the SQLite database based on book ID
   Future<String> getDatabasePath(int bookId) async {
     Directory dir;
+
     if (Platform.isAndroid || Platform.isIOS) {
       dir = await getApplicationDocumentsDirectory();
+    } else if (Platform.isWindows) {
+      dir = await getWindowsSaveDirectory();
     } else {
       dir = await getDownloadsDirectory() ??
           await getApplicationDocumentsDirectory();

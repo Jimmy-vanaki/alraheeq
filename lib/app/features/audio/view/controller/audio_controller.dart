@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:al_raheeq_library/app/features/audio/repository/audio_handler.dart';
 import 'package:al_raheeq_library/app/features/audio/view/controller/audio_service_controller.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:get/get.dart';
 
 class AudioController extends GetxController {
@@ -18,7 +20,7 @@ class AudioController extends GetxController {
   var visualizerValues = <double>[].obs;
 
   Timer? _positionTimer;
-
+  final AudioPlayer _windowsAudioPlayer = AudioPlayer();
   @override
   void onInit() {
     super.onInit();
@@ -52,7 +54,8 @@ class AudioController extends GetxController {
 
       if (initialized) {
         print(
-            '==>>=AudioServiceController audioHandler: ${audioServiceController.audioHandler}');
+          '==>>=AudioServiceController audioHandler: ${audioServiceController.audioHandler}',
+        );
 
         audioHandler = audioServiceController.audioHandler;
         isInitialized.value = true;
@@ -73,56 +76,54 @@ class AudioController extends GetxController {
     });
   }
 
-  // Future<void> initAudioHandler() async {
-  //   audioHandler = AudioHandlerImpl();
-
-  //   // Listen to playback state and update isPlaying
-  //   audioHandler!.playbackState.listen((state) {
-  //     isPlaying.value = state.playing;
-  //   });
-
-  //   // Update position and duration periodically
-  //   _positionTimer = Timer.periodic(const Duration(milliseconds: 500), (_) {
-  //     if (audioHandler?.player != null) {
-  //       position.value = audioHandler!.player.position;
-  //       duration.value = audioHandler!.player.duration ?? Duration.zero;
-  //     }
-  //   });
-
-  //   isInitialized.value = true;
-  // }
-
   Future<void> play(
-      String url, String title, String artist, String image) async {
+    String url,
+    String title,
+    String artist,
+    String image,
+  ) async {
     if (!isInitialized.value || audioHandler == null) {
       print('audioHandler not initialized!');
       return;
     }
-    await audioHandler!.playFromUri(
-      Uri.parse(url),
-      {
-        'title': title,
-        'artist': artist,
-        'album': 'Album Name',
-        'artUri': image,
-      },
-    );
+    await audioHandler!.playFromUri(Uri.parse(url), {
+      'title': title,
+      'artist': artist,
+      'album': 'Album Name',
+      'artUri': image,
+    });
 
     updateVisualizer();
   }
 
   Future<void> togglePlayPause(
-      String url, String title, String artist, String image) async {
-    if (!isInitialized.value || audioHandler == null) return;
-
-    if (isPlaying.value) {
-      await audioHandler!.pause();
-    } else {
-      final currentMedia = audioHandler!.mediaItem.valueOrNull;
-      if (currentMedia != null && currentMedia.id == url) {
-        await audioHandler!.play();
+    String url,
+    String title,
+    String artist,
+    String image,
+  ) async {
+    if (Platform.isWindows) {
+      // ویندوز: استفاده از audioplayers
+      if (isPlaying.value) {
+        await _windowsAudioPlayer.pause();
+        isPlaying.value = false;
       } else {
-        await play(url, title, artist, image);
+        await _windowsAudioPlayer.play(UrlSource(url));
+        isPlaying.value = true;
+      }
+    } else {
+      // سایر پلتفرم‌ها: استفاده از audioHandler فعلی
+      if (!isInitialized.value || audioHandler == null) return;
+
+      if (isPlaying.value) {
+        await audioHandler!.pause();
+      } else {
+        final currentMedia = audioHandler!.mediaItem.valueOrNull;
+        if (currentMedia != null && currentMedia.id == url) {
+          await audioHandler!.play();
+        } else {
+          await play(url, title, artist, image);
+        }
       }
     }
   }
@@ -141,15 +142,35 @@ class AudioController extends GetxController {
   }
 
   void seekForward() {
-    if (!isInitialized.value || audioHandler == null) return;
-    final newPos = position.value + const Duration(seconds: 10);
-    audioHandler!.seek(newPos);
+    if (Platform.isWindows) {
+      // ویندوز - استفاده از audioplayers
+      _windowsAudioPlayer.getCurrentPosition().then((current) async {
+        final newPos = current! + const Duration(seconds: 10);
+        await _windowsAudioPlayer.seek(newPos);
+      });
+    } else {
+      // سایر پلتفرم‌ها - استفاده از audioHandler
+      if (!isInitialized.value || audioHandler == null) return;
+      final newPos = position.value + const Duration(seconds: 10);
+      audioHandler!.seek(newPos);
+    }
   }
 
   void seekBackward() {
-    if (!isInitialized.value || audioHandler == null) return;
-    final newPos = position.value - const Duration(seconds: 10);
-    audioHandler!.seek(newPos < Duration.zero ? Duration.zero : newPos);
+    if (Platform.isWindows) {
+      // ویندوز - استفاده از audioplayers
+      _windowsAudioPlayer.getCurrentPosition().then((current) async {
+        var newPos = current! - const Duration(seconds: 10);
+        if (newPos < Duration.zero) newPos = Duration.zero;
+        await _windowsAudioPlayer.seek(newPos);
+      });
+    } else {
+      // سایر پلتفرم‌ها - استفاده از audioHandler
+      if (!isInitialized.value || audioHandler == null) return;
+      var newPos = position.value - const Duration(seconds: 10);
+      if (newPos < Duration.zero) newPos = Duration.zero;
+      audioHandler!.seek(newPos);
+    }
   }
 
   void seekTo(Duration pos) {

@@ -6,25 +6,25 @@ import 'package:al_raheeq_library/app/core/common/constants/constants.dart';
 import 'package:al_raheeq_library/app/core/database/db_helper.dart';
 import 'package:al_raheeq_library/app/core/init/init.dart';
 import 'package:al_raheeq_library/app/core/routes/routes.dart';
-import 'package:al_raheeq_library/app/features/audio/repository/audio_handler.dart';
 import 'package:al_raheeq_library/app/features/audio/view/controller/audio_service_controller.dart';
 import 'package:al_raheeq_library/app/features/home/view/controller/navigation_controller.dart';
 import 'package:al_raheeq_library/app/features/setting/view/controller/settings_controller.dart';
 import 'package:al_raheeq_library/app/notif/firebase_notification_service.dart';
-import 'package:audio_service/audio_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
-// import 'package:just_audio_background/just_audio_background.dart';
 import 'package:google_api_availability/google_api_availability.dart';
+// import 'package:just_audio_background/just_audio_background.dart';
+import 'package:al_raheeq_library/app/features/audio/repository/audio_handler.dart';
+import 'package:audio_service/audio_service.dart';
+import 'package:just_audio/just_audio.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   DBHelper.initializeDatabaseFactory();
   await init();
-
   Get.put(BottmNavigationController(), permanent: true);
   if (Platform.isAndroid) {
     try {
@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     Get.put(SettingsController());
     Get.put(ConnectivityController());
-
+    final settingsController = Get.find<SettingsController>();
     return Obx(() {
       return MediaQuery(
         data:
@@ -67,8 +67,9 @@ class MyApp extends StatelessWidget {
           ],
           locale: const Locale('ar'),
           title: Constants.appTitle,
+          themeMode: ThemeMode.light,
           theme: MyThemes.lightTheme,
-          darkTheme: MyThemes.lightTheme,
+          darkTheme: MyThemes.darkTheme,
           initialRoute: Routes.splash,
           getPages: Routes.pages,
         ),

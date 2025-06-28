@@ -160,7 +160,7 @@ class AudioBook extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Gap(20), 
+                                const Gap(20),
                                 ZoomTapAnimation(
                                   onTap: () {
                                     controller.toggleVolumePanel();
@@ -197,10 +197,11 @@ class AudioBook extends StatelessWidget {
                                       child: ZoomTapAnimation(
                                         onTap: () async {
                                           controller.togglePlayPause(
-                                              book['sound_url'],
-                                              book['title'],
-                                              book['writer'],
-                                              book['img']);
+                                            book['sound_url'],
+                                            book['title'],
+                                            book['writer'],
+                                            book['img'],
+                                          );
                                         },
                                         child: SvgPicture.asset(
                                           controller.isPlaying.value
