@@ -34,7 +34,11 @@ class ContentRepository {
   Future<String> getDatabasePath(int bookId) async {
     Directory dir;
 
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (Platform.isAndroid) {
+      // ترجیحاً از getExternalStorageDirectory استفاده کن
+      dir = await getExternalStorageDirectory() ??
+          await getApplicationDocumentsDirectory();
+    } else if (Platform.isIOS) {
       dir = await getApplicationDocumentsDirectory();
     } else if (Platform.isWindows) {
       dir = await getWindowsSaveDirectory();

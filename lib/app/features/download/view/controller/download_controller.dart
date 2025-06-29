@@ -23,22 +23,15 @@ class DownloadController extends GetxController {
       downloadComplete.value = false;
       downloadProgress.value = 0;
 
-      // درخواست دسترسی فقط برای اندروید
-      if (Platform.isAndroid) {
-        var status = await Permission.manageExternalStorage.request();
-
-        if (!status.isGranted) {
-          if (status.isPermanentlyDenied) {
-            await openAppSettings();
-          }
-          isDownloading.value = false;
-          return;
-        }
-      }
-
-      // گرفتن مسیر ذخیره فایل
       Directory dir;
-      if (Platform.isAndroid || Platform.isIOS) {
+
+      if (Platform.isAndroid) {
+        // بدون درخواست MANAGE_EXTERNAL_STORAGE
+
+        // استفاده از دایرکتوری مجاز اپ
+        dir = await getExternalStorageDirectory() ??
+            await getApplicationDocumentsDirectory();
+      } else if (Platform.isIOS) {
         dir = await getApplicationDocumentsDirectory();
       } else if (Platform.isWindows) {
         dir = await getWindowsSaveDirectory();
@@ -46,9 +39,10 @@ class DownloadController extends GetxController {
         dir = await getDownloadsDirectory() ??
             await getApplicationDocumentsDirectory();
       }
-      String savePath = p.join(dir.path, fileName);
 
-      // بررسی وجود فایل قبلاً دانلود شده
+      final savePath = p.join(dir.path, fileName);
+
+      // بررسی وجود فایل قبلی
       if (await File(savePath).exists()) {
         print("✅ File already exists at: $savePath");
         isDownloading.value = false;
@@ -56,7 +50,7 @@ class DownloadController extends GetxController {
         return;
       }
 
-      // شروع دانلود با dio
+      // دانلود فایل با dio
       await dio.download(url, savePath, onReceiveProgress: (received, total) {
         if (total > 0) {
           double progress = (received / total) * 100;
@@ -67,12 +61,12 @@ class DownloadController extends GetxController {
         }
       });
 
-      // اگر فایل zip بود استخراجش کن
+      // استخراج فایل zip
       if (p.extension(savePath).toLowerCase() == '.zip') {
         await extractAndDeleteZip(savePath);
       }
 
-      // استخراج شماره کتاب از نام فایل (اعداد داخل نام)
+      // استخراج شماره کتاب از نام فایل
       final bookIdStr = p.basenameWithoutExtension(fileName);
       final bookId = int.parse(bookIdStr.replaceAll(RegExp(r'[^0-9]'), ''));
 
