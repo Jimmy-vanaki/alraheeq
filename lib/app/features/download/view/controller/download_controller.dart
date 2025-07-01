@@ -26,9 +26,6 @@ class DownloadController extends GetxController {
       Directory dir;
 
       if (Platform.isAndroid) {
-        // بدون درخواست MANAGE_EXTERNAL_STORAGE
-
-        // استفاده از دایرکتوری مجاز اپ
         dir = await getExternalStorageDirectory() ??
             await getApplicationDocumentsDirectory();
       } else if (Platform.isIOS) {

@@ -149,8 +149,19 @@ class AboutPage extends StatelessWidget {
                                   html_parser.parse(rawHtml);
                               final plainText = document.body?.text ?? '';
 
-                              await Share.share(plainText,
-                                  subject: 'Shared Content');
+                              if (Platform.isWindows) {
+                                // Copy to clipboard on Windows
+                                await Clipboard.setData(
+                                    ClipboardData(text: plainText));
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  content: Text('تم نسخ النص!'),
+                                ));
+                              } else {
+                                // Use share_plus normally on other platforms
+                                await Share.share(plainText,
+                                    subject: 'Shared Content');
+                              }
                             } catch (e) {
                               print('❌ Error: $e');
                             }

@@ -15,13 +15,14 @@ class BookDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       body: Stack(
         children: [
           Image.asset(
             "assets/images/bg-b.png",
-            height: Get.height,
-            width: Get.width,
+            height: size.height,
+            width: size.width,
             fit: BoxFit.contain,
             repeat: ImageRepeat.repeatX,
           ),
@@ -48,17 +49,20 @@ class BookDetailPage extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: SingleChildScrollView(
-                    child: Text(
-                      book['description'],
-                      style: TextStyle(
-                        height: 2,
+                  child: SizedBox(
+                    width: size.width,
+                    child: SingleChildScrollView(
+                      child: Text(
+                        book['description'],
+                        style: TextStyle(
+                          height: 2,
+                        ),
+                        textAlign: TextAlign.justify,
                       ),
-                      textAlign: TextAlign.justify,
                     ),
                   ),
                 ),
-                const Gap(10),
+                const Spacer(),
                 ElevatedButton(
                   onPressed: () {
                     Get.to(
@@ -81,7 +85,7 @@ class BookDetailPage extends StatelessWidget {
           Positioned(
             top: 40,
             left: 20,
-            width: Get.width - 40,
+            width: size.width - 40,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

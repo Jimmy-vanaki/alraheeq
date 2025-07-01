@@ -53,6 +53,16 @@ class DBHelper {
     return _db!;
   }
 
+  static Future<void> closeDb() async {
+    if (_db != null) {
+      await _db!.close();
+      _db = null;
+      print('Database closed successfully.');
+    } else {
+      print('Database was already closed.');
+    }
+  }
+
   /// Execute a simple query on the given table
   static Future<List<Map<String, dynamic>>> query(String table) async {
     final db = await initDb();
@@ -87,6 +97,17 @@ class DBHelper {
     final db = await initDb();
     await db.update('books', {'downloaded': 1},
         where: 'id = ?', whereArgs: [id]);
+  }
+
+  /// Mark a book as not downloaded
+  static Future<void> markBookAsNotDownloaded(int id) async {
+    final db = await initDb();
+    await db.update(
+      'books',
+      {'downloaded': 0},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   /// Get book info by bookId

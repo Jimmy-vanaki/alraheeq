@@ -64,8 +64,7 @@ List<pw.Widget> _parseHtmlToWidgets(dom.Element element, pw.Font font) {
           widgets.add(pw.SizedBox(height: 10));
           break;
         default:
-          widgets.addAll(
-              _parseHtmlToWidgets(node, font)); // Recursion برای تگ‌های داخل هم
+          widgets.addAll(_parseHtmlToWidgets(node, font));
           break;
       }
     } else if (node is dom.Text) {

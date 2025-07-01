@@ -8,42 +8,53 @@ class BookListController extends GetxController {
   // List of downloaded books
   RxList<Map<String, dynamic>> downloadedBooks = <Map<String, dynamic>>[].obs;
 
-  // List of parsed pages (used for printing or other actions)
-  var pages = <Map<String, dynamic>>[].obs;
+  // Filtered book list reactive
+  RxList<Map<String, dynamic>> filteredBooks = <Map<String, dynamic>>[].obs;
 
   // State variables
   var isLoading = true.obs;
   var isDownloading = false.obs;
   var downloadComplete = false.obs;
   var progress = 0.obs;
-
+  var pages = <Map<String, dynamic>>[].obs;
   // Search query for filtering
   RxString searchQuery = ''.obs;
 
-  // Filtered book list based on search query (title or writer)
-  List<Map<String, dynamic>> get filteredBooks {
-    if (searchQuery.value.isEmpty) return downloadedBooks;
-    return downloadedBooks.where((book) {
+  @override
+  void onInit() {
+    super.onInit();
+
+    everAll([downloadedBooks, searchQuery], (_) {
+      _filterBooks();
+    });
+
+    fetchDownloadedBooks();
+  }
+
+  void _filterBooks() {
+    if (searchQuery.value.isEmpty) {
+      filteredBooks.assignAll(downloadedBooks);
+    } else {
       final query = searchQuery.value.toLowerCase();
-      final title = (book['title'] ?? '').toString().toLowerCase();
-      final writer = (book['writer'] ?? '').toString().toLowerCase();
-      return title.contains(query) || writer.contains(query);
-    }).toList();
+      filteredBooks.assignAll(downloadedBooks.where((book) {
+        final title = (book['title'] ?? '').toString().toLowerCase();
+        final writer = (book['writer'] ?? '').toString().toLowerCase();
+        return title.contains(query) || writer.contains(query);
+      }).toList());
+    }
   }
 
   // Fetch all downloaded books from local database
   Future<void> fetchDownloadedBooks() async {
     isLoading.value = true;
-    final result = await DBHelper.getDownloadedBooks();
-    downloadedBooks.value = result;
-    isLoading.value = false;
-  }
-
-  // Called when controller is initialized
-  @override
-  void onInit() {
-    super.onInit();
-    fetchDownloadedBooks();
+    try {
+      final result = await DBHelper.getDownloadedBooks();
+      downloadedBooks.assignAll(result);
+    } catch (e) {
+      print('❌ خطا در گرفتن کتاب‌ها: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   // Download PDF file if it doesn't exist locally
